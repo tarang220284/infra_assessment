@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Infrastructure Assessment — WWT</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <!-- LOGIN -->
+  <div id="login" class="login-overlay">
+    <div class="login-card">
+      <div class="login-brand">
+        <img class="wwt-logo" src="/static/wwt-logo.svg" alt="WWT" />
+        <div class="login-title">Infrastructure Assessment</div>
+        <div class="login-sub">Multi Domain Discovery</div>
+      </div>
+      <form id="loginForm">
+        <label>Username
+          <input id="loginUsername" autocomplete="username" required maxlength="120" />
+        </label>
+        <label>Password
+          <input id="loginPassword" type="password" autocomplete="current-password" required maxlength="200" />
+        </label>
+        <div id="loginErr" class="form-error"></div>
+        <div class="row right">
+          <button type="submit" class="btn btn-primary btn-wide">Sign in</button>
+        </div>
+        <div class="login-hint">First-time setup → username <code>admin</code>, password <code>Alpha#2026</code>. You'll be prompted to reset on first login.</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- FORCED RESET -->
+  <div id="resetScreen" class="login-overlay hidden">
+    <div class="login-card">
+      <div class="login-brand">
+        <img class="wwt-logo" src="/static/wwt-logo.svg" alt="WWT" />
+        <div class="login-title">Set a new password</div>
+        <div class="login-sub">8+ characters with 1 uppercase, 1 number, and 1 special character.</div>
+      </div>
+      <form id="resetForm">
+        <label>Current password
+          <input id="resetCurrent" type="password" required maxlength="200" />
+        </label>
+        <label>New password
+          <input id="resetNew" type="password" required maxlength="200" />
+        </label>
+        <label>Confirm new password
+          <input id="resetConfirm" type="password" required maxlength="200" />
+        </label>
+        <div id="resetErr" class="form-error"></div>
+        <div class="row right">
+          <button type="button" class="btn" id="resetCancel">Sign out</button>
+          <button type="submit" class="btn btn-primary">Update password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- HOME / PROJECT LIST -->
+  <div id="home" class="home-screen hidden">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <img class="wwt-logo top" src="/static/wwt-logo.svg" alt="WWT" />
+        <div class="top-bar-title">Infrastructure Assessment</div>
+      </div>
+      <nav class="top-bar-tabs">
+        <button class="top-tab active" data-tab="projects">Projects</button>
+        <button class="top-tab admin-only" data-tab="users">Users</button>
+        <button class="top-tab admin-only" data-tab="audit">Audit log</button>
+      </nav>
+      <div class="top-bar-right">
+        <span id="userChip" class="user-chip"></span>
+        <button id="changePwBtn" class="btn-link">Change password</button>
+        <button id="logoutBtn" class="btn-link">Sign out</button>
+      </div>
+    </header>
+
+    <main class="home-main">
+      <!-- PROJECTS TAB -->
+      <section id="tab-projects" class="tab-panel">
+        <div class="page-head">
+          <div>
+            <h1>Projects</h1>
+            <div class="sub">Each project is one customer engagement. Click a project to open its sessions, or create a new one.</div>
+          </div>
+          <button id="newProjectBtn" class="btn btn-primary write-only">+ New Project</button>
+        </div>
+        <div id="projectGrid" class="project-grid"></div>
+      </section>
+
+      <!-- USERS TAB (admin) -->
+      <section id="tab-users" class="tab-panel hidden">
+        <div class="page-head">
+          <div>
+            <h1>Users &amp; Access</h1>
+            <div class="sub">Admin-only. Create users, assign roles, deactivate, or force password reset.</div>
+          </div>
+          <button id="newUserBtn" class="btn btn-primary">+ New User</button>
+        </div>
+        <div id="userTable" class="data-table"></div>
+      </section>
+
+      <!-- AUDIT TAB (admin) -->
+      <section id="tab-audit" class="tab-panel hidden">
+        <div class="page-head">
+          <div>
+            <h1>Audit Log</h1>
+            <div class="sub">Read-only. Every login, password reset, project / session / user mutation is recorded.</div>
+          </div>
+          <button id="refreshAuditBtn" class="btn">Refresh</button>
+        </div>
+        <div id="auditTable" class="data-table"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- PROJECT WORKSPACE -->
+  <div id="workspace" class="hidden">
+    <aside id="sidebar">
+      <header class="brand">
+        <img class="wwt-logo sidebar" src="/static/wwt-logo.svg" alt="WWT" />
+        <div>
+          <div class="brand-title" id="brandProject">—</div>
+          <div class="brand-sub" id="brandCustomer">—</div>
+        </div>
+      </header>
+
+      <section class="block">
+        <button id="backToHome" class="btn btn-wide">← Back to Projects</button>
+      </section>
+
+      <section class="block">
+        <label class="block-label">Discovery Session</label>
+        <select id="sessionSelect"></select>
+        <div id="domainBadge" class="domain-badge"></div>
+      </section>
+
+      <section class="block">
+        <label class="block-label">Navigate</label>
+        <button class="nav-link" data-view="overview">Project Overview</button>
+        <button class="nav-link" data-view="dashboard">Session Dashboard</button>
+        <div id="layerNav"></div>
+      </section>
+
+      <section class="block">
+        <label class="block-label">Search questions</label>
+        <input id="searchBox" type="search" placeholder="search current domain…" />
+        <div id="searchResults" class="search-results"></div>
+      </section>
+
+      <section class="block">
+        <label class="block-label">Export current session</label>
+        <div class="row">
+          <button class="btn" data-export="md">.md</button>
+          <button class="btn" data-export="json">.json</button>
+          <button class="btn" data-export="docx">.docx</button>
+        </div>
+        <button class="btn btn-wide" data-export="summary-docx">Client summary .docx</button>
+      </section>
+
+      <footer class="sidebar-foot">
+        <div id="progressOverall"></div>
+      </footer>
+    </aside>
+
+    <main id="main">
+      <div id="view"></div>
+    </main>
+  </div>
+
+  <!-- modals -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="modalTitle">…</h3>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Runtime data — generated on launch
+data/sessions.db
+data/sessions.db-journal
+data/sessions.db-wal
+data/sessions.db-shm
+
+# Generated exports
+exports/*.md
+exports/*.json
+exports/*.docx
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
