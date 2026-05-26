@@ -1,4 +1,4 @@
-# Backup & IRE Discovery Tool
+## Discovery Tool
 
 Locally-runnable, offline facilitator app for the **Backup and Isolated Recovery Environment (IRE)** discovery questionnaire. Built for live consulting workshops — replaces the Word doc + Excel tracker workflow.
 
